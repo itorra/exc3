@@ -1,0 +1,106 @@
+---
+title: "Exc3A - Grey’s Anatomy"
+author: "Ido Algom & Natalie Gilboa"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(igraph)
+require(igraph)
+```
+
+Load The Data set: 
+
+```{r}
+grey.data = read.csv('ga_edgelist.csv',header = T)
+grey_data =  graph.data.frame(grey.data,directed = F)
+```
+
+# Centrality Degree
+
+## Betweeness
+
+```{r}
+bet = betweenness(grey_data)
+bet = sort(bet,decreasing = T)
+```
+```{r}
+names(bet[1])
+```
+
+## Closeness 
+
+```{r}
+close = closeness(grey_data)
+close = sort(close, decreasing = T)
+```
+```{r}
+names(close[1])
+```
+
+## Eigenvector
+```{r}
+eigen = evcent(grey_data)
+eigen = sort(eigen$vector, decreasing = T)
+```
+```{r}
+names(eigen[1])
+```
+
+# Community Detection
+
+We started the algorithms: 
+
+1. Girvan-Newman
+2. Multi-Level
+
+## Girvan-Newman
+
+```{r}
+girvan = edge.betweenness.community(grey_data)
+```
+
+```{r}
+membership_girvan = membership(girvan)
+plot(grey_data, vertex.size=7, vertex.label=NA,vertex.color=membership_girvan, asp=FALSE)
+```
+
+## Community recived and their size
+
+```{r}
+max(levels(as.factor(membership_girvan)))
+```
+```{r}
+summary(as.factor(membership_girvan))
+```
+
+## Modularity
+```{r}
+girvan$modularity
+```
+
+## Multi-Level
+
+```{r}
+multi = multilevel.community(grey_data)
+```
+
+```{r}
+membership_multi = membership(multi)
+plot(grey_data, vertex.size=7, vertex.label=NA,vertex.color=membership_multi, asp=FALSE)
+```
+
+## Community recived and their size
+
+```{r}
+max(levels(as.factor(membership_multi)))
+```
+```{r}
+summary(as.factor(membership_multi))
+```
+
+## Modularity
+```{r}
+multi$modularity
+```
+

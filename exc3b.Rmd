@@ -1,0 +1,115 @@
+---
+title: "Exc3B - Roads in Europe"
+author: "Ido Algom & Natalie Gilboa"
+output: html_document
+---
+
+This dataset shows each pair of cities that have a direct road between them
+Source: http://konect.uni-koblenz.de/networks/
+
+```{r, message=FALSE, warning=FALSE}
+library(igraph)
+require(igraph)
+```
+
+Load The Data set: 
+
+```{r Intro}
+eue.data = read.csv('eur.csv',header = F)
+eur_data =  graph.data.frame(eue.data,directed = F)
+```
+
+Remove self loops:
+
+```{r Remove Self loops}
+eur_data = simplify(eur_data)
+```
+
+# Centrality Degree
+
+## Betweeness
+
+```{r Betweeness1-Prep}
+bet = betweenness(eur_data)
+bet = sort(bet,decreasing = T)
+```
+```{r Betweeness1-Res}
+names(bet[1])
+```
+
+## Closeness 
+
+```{r Closeness1-Prep}
+close = closeness(eur_data)
+close = sort(close, decreasing = T)
+```
+```{r Closeness1-Res}
+names(close[1])
+```
+
+## Eigenvector
+```{r Eigenvector1-Prep}
+eigen = evcent(eur_data)
+eigen = sort(eigen$vector, decreasing = T)
+```
+```{r Eigenvector1-Res}
+names(eigen[1])
+```
+
+# Community Detection
+
+We started the algorithms: 
+
+1. Girvan-Newman
+2. Multi-Level
+
+## Girvan-Newman
+
+```{r Girvan-Newman}
+girvan = edge.betweenness.community(eur_data)
+```
+
+```{r Girvan-Newman-Plot}
+membership_girvan = membership(girvan)
+plot(eur_data, vertex.size=7, vertex.label=NA,vertex.color=membership_girvan, asp=FALSE)
+```
+
+## Community recived and their size
+
+```{r Girvan-Newman-Community}
+max(levels(as.factor(membership_girvan)))
+```
+```{r Girvan-Newman-Sum}
+summary(as.factor(membership_girvan))
+```
+
+## Modularity
+```{r Girvan-Newman-Mod}
+girvan$modularity
+```
+
+# Multi-Level
+
+```{r Multi-Level}
+multi = multilevel.community(eur_data)
+```
+
+```{r Multi-Level-Plot}
+membership_multi = membership(multi)
+plot(eur_data, vertex.size=7, vertex.label=NA,vertex.color=membership_multi, asp=FALSE)
+```
+
+## Community recived and their size
+
+```{r Multi-Level-Comm}
+max(levels(as.factor(membership_multi)))
+```
+```{r Multi-Level-Sum}
+summary(as.factor(membership_multi))
+```
+
+## Modularity
+```{r Multi-Level-Mod}
+multi$modularity
+```
+
